@@ -27,7 +27,10 @@ db.once("open", function () {
   console.log("Connected to mongod server");
 });
 
-mongoose.connect("mongodb://localhost:27017/i3Admin");
+// mongoose.connect("mongodb://localhost:27017/i3Admin");
+mongoose.connect(
+  "mongodb+srv://admin:adminPassword@cluster0.hptab.mongodb.net/i3Admin"
+);
 
 // [CONFIGURE ROUTER]
 const apiRoutes = require("./routes");
