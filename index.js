@@ -4,15 +4,17 @@ const app = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const serveStatic = require("serve-static");
 const path = require("path");
+const fileUpload = require("express-fileupload");
 
 // [CONFIGURE APP TO USE bodyParser]
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 
 // [CONFIGURE CORS]
 app.use(cors());
+
+// [CONFIGURE FILE UPLOAD]
+app.use(fileUpload());
 
 // [CONFIGURE SERVER PORT]
 const port = process.env.PORT || 3000;
@@ -30,6 +32,27 @@ mongoose.connect("mongodb://localhost:27017/i3Admin");
 // [CONFIGURE ROUTER]
 const apiRoutes = require("./routes");
 app.use("/api", apiRoutes);
+
+// [FILE UPLOAD API]
+app.use(express.static("uploads"));
+// file upload api
+app.post("/upload", (req, res) => {
+  if (!req.files) {
+    return res.status(500).send({ msg: "file is not found" });
+  }
+  // accessing the file
+  const myFile = req.files.file;
+
+  //  mv() method places the file inside public directory
+  myFile.mv(`${__dirname}/uploads/${myFile.name}`, function (err) {
+    if (err) {
+      console.log(err);
+      return res.status(500).send({ msg: "Error occured" });
+    }
+    // returing the response with file path and name
+    return res.send({ name: myFile.name, path: `/${myFile.name}` });
+  });
+});
 
 // [INTEGRATE WITH FRONT-END]
 app.use(
