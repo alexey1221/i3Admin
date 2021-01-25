@@ -10,6 +10,8 @@ const userSchema = new Schema({
   lastName: String,
   companyName: String,
   status: Boolean,
+  email: String,
+  firebaseId: String,
 });
 
 module.exports = mongoose.model("user", userSchema);
