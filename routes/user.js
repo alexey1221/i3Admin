@@ -27,6 +27,13 @@ router.post("/getEmailByUserName", (req, res) => {
   });
 });
 
+router.post("/getUserByEmail", (req, res) => {
+  User.find({ email: req.body.email }, (err, user) => {
+    if (err) return res.status(500).send({ error: err.message });
+    res.json({ result: user.length > 0 ? 1 : 0 });
+  });
+});
+
 router.post("/", async (req, res) => {
   try {
     // Create User to the Firebase using FB-Admin SDK
@@ -50,20 +57,6 @@ router.post("/", async (req, res) => {
       };
       user.sendEmailVerification(actionCodeSettings);
     });
-
-    // Send Password Reset Email
-    firebase
-      .auth()
-      .sendPasswordResetEmail(req.body.email)
-      .then(function () {
-        // Password reset email sent.
-      })
-      .catch(function (error) {
-        // Error occurred. Inspect error.code.
-      });
-
-    // Sign-out from temporary user after send email
-    // currentUser.signout;
 
     let user = new User(req.body);
     user["firebaseId"] = userRecord.uid;
