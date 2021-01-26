@@ -3,11 +3,19 @@ const router = express.Router();
 const Icon = require("../models/icon");
 const path = require("path");
 
-router.get("/", (req, res) => {
-  Icon.find((err, icons) => {
-    if (err) return res.status(500).send({ error: err.message });
-    res.json(icons);
-  });
+router.get("/:company_id", (req, res) => {
+  let searchQuery = {};
+  if (req.params.company_id && req.params.company_id != "admin") {
+    searchQuery = { company: req.params.company_id };
+  }
+  Icon.find(searchQuery)
+    .populate("company")
+    .then((icons) => {
+      res.json(icons);
+    })
+    .catch((err) => {
+      res.status(500).send({ error: err.message });
+    });
 });
 
 router.post("/", (req, res) => {
@@ -28,6 +36,7 @@ router.post("/", (req, res) => {
       path: req.body.path,
       status: req.body.status,
       filePath: fileName,
+      company: req.body.company,
     });
 
     icon.save((err, icon) => {

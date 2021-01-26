@@ -2,11 +2,19 @@ const express = require("express");
 const router = express.Router();
 const Computer = require("../models/computer");
 
-router.get("/", (req, res) => {
-  Computer.find((err, computers) => {
-    if (err) return res.status(500).send({ error: err.message });
-    res.json(computers);
-  });
+router.get("/:company_id", (req, res) => {
+  let searchQuery = {};
+  if (req.params.company_id && req.params.company_id != "admin") {
+    searchQuery = { company: req.params.company_id };
+  }
+  Computer.find(searchQuery)
+    .populate("company")
+    .then((computers) => {
+      res.json(computers);
+    })
+    .catch((err) => {
+      res.status(500).send({ error: err.message });
+    });
 });
 
 router.post("/", (req, res) => {

@@ -4,9 +4,13 @@ const Group = require("../models/group");
 const path = require("path");
 const Message = require("../models/message");
 
-router.get("/", (req, res) => {
+router.get("/:company_id", (req, res) => {
   Message.find().then((messages) => {
-    Group.find()
+    let searchQuery = {};
+    if (req.params.company_id && req.params.company_id != "admin") {
+      searchQuery = { company: req.params.company_id };
+    }
+    Group.find(searchQuery)
       .then((groups) => {
         const result = groups.map((group) => {
           let item = {

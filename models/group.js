@@ -6,6 +6,7 @@ const groupSchema = new Schema({
   computers: [{ type: mongoose.Schema.Types.ObjectId, ref: "computer" }],
   backgroundImage: String,
   activeIcons: Object,
+  company: { type: mongoose.Schema.Types.ObjectId, ref: "company" },
 });
 
 module.exports = mongoose.model("group", groupSchema);

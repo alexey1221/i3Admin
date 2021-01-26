@@ -6,6 +6,7 @@ const iconSchema = new Schema({
   path: String,
   status: Boolean,
   filePath: String,
+  company: { type: mongoose.Schema.Types.ObjectId, ref: "company" },
 });
 
 module.exports = mongoose.model("icon", iconSchema);

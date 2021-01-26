@@ -8,6 +8,7 @@ const computerSchema = new Schema({
   status: Boolean,
   computerKey: String,
   endPointKey: String,
+  company: { type: mongoose.Schema.Types.ObjectId, ref: "company" },
 });
 
 module.exports = mongoose.model("computer", computerSchema);

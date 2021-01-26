@@ -13,11 +13,19 @@ const firebase = require("firebase");
 const fbClientConfig = require("../firebase-client.json");
 firebase.initializeApp(fbClientConfig);
 
-router.get("/", (req, res) => {
-  User.find((err, users) => {
-    if (err) return res.status(500).send({ error: err.message });
-    res.json(users);
-  });
+router.get("/:company_id", (req, res) => {
+  let searchQuery = {};
+  if (req.params.company_id && req.params.company_id != "admin") {
+    searchQuery = { company: req.params.company_id };
+  }
+  User.find(searchQuery)
+    .populate("company")
+    .then((users) => {
+      res.json(users);
+    })
+    .catch((err) => {
+      res.status(500).send({ error: err.message });
+    });
 });
 
 router.post("/getEmailByUserName", (req, res) => {
@@ -30,7 +38,11 @@ router.post("/getEmailByUserName", (req, res) => {
 router.post("/getUserByEmail", (req, res) => {
   User.find({ email: req.body.email }, (err, user) => {
     if (err) return res.status(500).send({ error: err.message });
-    res.json({ result: user.length > 0 ? 1 : 0 });
+    // Remove temporary sign-in social account from the Firebase
+    if (user.length < 1) {
+      admin.auth().deleteUser(req.body.uid);
+    }
+    res.json(user);
   });
 });
 
@@ -96,7 +108,7 @@ router.delete("/:user_id", (req, res) => {
   // Remove from Firebase
   User.findById(req.params.user_id, async (err, user) => {
     if (err) res.status(500).send(err);
-    await admin.auth().deleteUser(user.firebaseId);
+    admin.auth().deleteUser(user.firebaseId);
 
     // Remove from MongoDB
     User.remove({ _id: req.params.user_id }, function (err, output) {

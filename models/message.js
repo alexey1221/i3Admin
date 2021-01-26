@@ -8,6 +8,7 @@ const messageSchema = new Schema({
   status: Boolean,
   openStatus: { type: Number, default: 0 },
   group: { type: mongoose.Schema.Types.ObjectId, ref: "group" },
+  company: { type: mongoose.Schema.Types.ObjectId, ref: "company" },
 });
 
 module.exports = mongoose.model("message", messageSchema);

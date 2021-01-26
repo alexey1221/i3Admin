@@ -8,10 +8,10 @@ const userSchema = new Schema({
   },
   firstName: String,
   lastName: String,
-  companyName: String,
   status: Boolean,
   email: String,
   firebaseId: String,
+  company: { type: mongoose.Schema.Types.ObjectId, ref: "company" },
 });
 
 module.exports = mongoose.model("user", userSchema);
